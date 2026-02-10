@@ -8,4 +8,5 @@ For now, the installation is only local, as the package has not yet been submitt
 
 # Scripts
 
-The scripts yield reproducible results (except for the execution times). The mains scripts are `simulation-plots.py` for the plots on simulated data (ARI, MSE, execution times), and `iris-plots.py` which is its counterpart for tests on a real dataset (Iris). The other files are generating pictures for the Monte-Carlo verification of the asymptotic ARI formula ($ARI \overset{\text{a.s.}}{\to} \left( 1 - 2 \Phi(-\frac{d}{2 \sigma}) \right)^2$) and the other to illustrate the padding used to vectorize the implementation.
+The scripts yield reproducible results (except for the execution times). The main scripts are `simulation-plots.py` for the plots on simulated data (ARI, MSE, execution times), and `iris-plots.py` which is its counterpart for tests on a real dataset (Iris). The other files are generating pictures for the Monte-Carlo verification of the asymptotic ARI formula ($ARI \overset{\text{a.s.}}{\to} \left( 1 - 2 \Phi(-\frac{d}{2 \sigma}) \right)^2$) and the other to illustrate the padding used to vectorize the implementation.
+
