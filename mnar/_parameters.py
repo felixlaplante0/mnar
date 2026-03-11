@@ -5,14 +5,14 @@ from fastkmeanspp import KMeans
 from sklearn.impute import SimpleImputer
 
 
-class Params(NamedTuple):
+class Parameters(NamedTuple):
     prior_probs: np.ndarray
     cluster_centers: np.ndarray
     cluster_cov_matrices: np.ndarray
     missing_probs: np.ndarray
 
     @classmethod
-    def init_params(
+    def init(
         cls, n_clusters: int, X: np.ndarray, mode: str, random_state: int | None
     ) -> Self:
         """Initialize parameters for the model.

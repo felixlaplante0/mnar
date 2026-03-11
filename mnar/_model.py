@@ -11,13 +11,13 @@ from sklearn.utils._param_validation import (
     StrOptions,
     validate_params,
 )
-from sklearn.utils.validation import check_is_fitted
+from sklearn.utils.validation import check_is_fitted, validate_data
 
-from ._params import Params
+from ._parameters import Parameters
 
 
-class GaussMnar(BaseEstimator, ClusterMixin):
-    """Gaussian Mnar EM Algorithm.
+class GaussMnar(ClusterMixin, BaseEstimator):
+    """Gaussian MNAR Gaussian EM Algorithm.
 
     Attributes:
         max_iter (int): Maximum number of iterations.
@@ -210,7 +210,7 @@ class GaussMnar(BaseEstimator, ClusterMixin):
         cluster_cov_matrices_tilde: np.ndarray,
         loglik: np.ndarray,
         miss_mask: np.ndarray,
-    ) -> Params:
+    ) -> Parameters:
         """M step.
 
         Args:
@@ -220,7 +220,7 @@ class GaussMnar(BaseEstimator, ClusterMixin):
             miss_mask (np.ndarray): Missing mask.
 
         Returns:
-            Params: New parameters.
+            Parameters: New parameters.
         """
         # Compute responsibilities
         t = self._responsibilities(loglik)
@@ -251,31 +251,9 @@ class GaussMnar(BaseEstimator, ClusterMixin):
         else:
             miss_probs = cast(np.ndarray, self.miss_probs_)
 
-        return Params(prior_probs, cluster_centers, cluster_cov_matrices, miss_probs)
-
-    @staticmethod
-    def _validate_X(X: npt.ArrayLike) -> np.ndarray:
-        """Validate X.
-
-        Args:
-            X (npt.ArrayLike): Data.
-
-        Raises:
-            ValueError: If X is not a 2D array.
-            ValueError: If X contains inf values.
-
-        Returns:
-            np.ndarray: Validated data.
-        """
-        X = np.asarray(X)  # type: ignore
-
-        if X.ndim != 2:  # noqa: PLR2004
-            raise ValueError("X must be a 2D array.")
-
-        if np.isinf(X).any():
-            raise ValueError("X must not contain inf values.")
-
-        return X
+        return Parameters(
+            prior_probs, cluster_centers, cluster_cov_matrices, miss_probs
+        )
 
     @validate_params(
         {"X": ["array-like"], "y": [None]}, prefer_skip_nested_validation=True
@@ -290,7 +268,7 @@ class GaussMnar(BaseEstimator, ClusterMixin):
         Returns:
             Self: Fitted model.
         """
-        X = self._validate_X(X)  # type: ignore
+        X = np.asarray(validate_data(self, X))  # type: ignore
 
         # Observed mask and missing mask
         miss_mask = np.isnan(X)
@@ -299,9 +277,7 @@ class GaussMnar(BaseEstimator, ClusterMixin):
         norm_factor = -0.5 * np.log(2 * np.pi) * n_valid
 
         # Initialize parameters
-        init_params = Params.init_params(
-            self.n_clusters, X, self.mode, self.random_state
-        )
+        init_params = Parameters.init(self.n_clusters, X, self.mode, self.random_state)
         (
             self.prior_probs_,
             self.cluster_centers_,
@@ -348,7 +324,7 @@ class GaussMnar(BaseEstimator, ClusterMixin):
         self.bic_ = -2 * self.loglik_ + np.log(X.shape[0]) * n_params
         self.probs_ = self._responsibilities(loglik).T
         self.labels_ = np.argmax(self.probs_, axis=1)
-        self.icl_ = loglik[self.labels_].sum() - 0.5 * np.log(X.shape[0]) * n_params
+        self.icl_ = loglik[:, self.labels_].sum() - 0.5 * np.log(X.shape[0]) * n_params
 
         return self
 
@@ -375,7 +351,7 @@ class GaussMnar(BaseEstimator, ClusterMixin):
             ],
         )
 
-        X = self._validate_X(X)  # type: ignore
+        X = np.asarray(validate_data(self, X))  # type: ignore
 
         # Missing mask
         miss_mask = np.isnan(X)
@@ -425,7 +401,7 @@ class GaussMnar(BaseEstimator, ClusterMixin):
             ],
         )
 
-        X = self._validate_X(X)  # type: ignore
+        X = np.asarray(validate_data(self, X))  # type: ignore
 
         # Missing mask
         miss_mask = np.isnan(X)
