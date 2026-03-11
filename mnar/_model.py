@@ -268,7 +268,7 @@ class GaussMnar(ClusterMixin, BaseEstimator):
         Returns:
             Self: Fitted model.
         """
-        X = np.asarray(validate_data(self, X))  # type: ignore
+        X = np.asarray(validate_data(self, X, ensure_all_finite="allow-nan"))  # type: ignore
 
         # Observed mask and missing mask
         miss_mask = np.isnan(X)
@@ -351,7 +351,7 @@ class GaussMnar(ClusterMixin, BaseEstimator):
             ],
         )
 
-        X = np.asarray(validate_data(self, X))  # type: ignore
+        X = np.asarray(validate_data(self, X, ensure_all_finite="allow-nan"))  # type: ignore
 
         # Missing mask
         miss_mask = np.isnan(X)
@@ -401,7 +401,7 @@ class GaussMnar(ClusterMixin, BaseEstimator):
             ],
         )
 
-        X = np.asarray(validate_data(self, X))  # type: ignore
+        X = np.asarray(validate_data(self, X, ensure_all_finite="allow-nan"))  # type: ignore
 
         # Missing mask
         miss_mask = np.isnan(X)
